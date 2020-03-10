@@ -6,11 +6,17 @@
 package base;
 
 import java.util.Properties;    
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;    
 import javax.mail.internet.*;    
 //Funciona esto!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 class Mailer{  
     public static void send(String from,String password,String to,String sub,String msg){  
+        //HAY QUE UTILIZAR LAS PROPIEDADES DE ABAJO
+        //Importar los tres jars(mail.jar,javax.mail.jar,activation.jar)
+        
           //Get properties object    
           Properties props = new Properties();    
           props.put("mail.smtp.host", "smtp.gmail.com");    
@@ -31,7 +37,26 @@ class Mailer{
            MimeMessage message = new MimeMessage(session);    
            message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));    
            message.setSubject(sub);    
-           message.setText(msg);    
+           // creating first MimeBodyPart object 
+            BodyPart messageBodyPart1 = new MimeBodyPart();  
+            messageBodyPart1.setText("This is body of the mail"); 
+              
+            // creating second MimeBodyPart object 
+            BodyPart messageBodyPart2 = new MimeBodyPart();  
+            String filename = "hola.txt";
+            DataSource source = new FileDataSource(filename);   
+            messageBodyPart2.setDataHandler(new DataHandler(source));   
+            messageBodyPart2.setFileName(filename);   
+              
+            // creating MultiPart object 
+            Multipart multipartObject = new MimeMultipart();   
+            multipartObject.addBodyPart(messageBodyPart1);   
+            multipartObject.addBodyPart(messageBodyPart2); 
+      
+      
+      
+            // set body of the email. 
+            message.setContent(multipartObject);    
            //send message  
            Transport.send(message);    
            System.out.println("message sent successfully");    
